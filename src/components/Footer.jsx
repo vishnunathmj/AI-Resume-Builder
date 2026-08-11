@@ -16,7 +16,7 @@ function Footer() {
         <div className="col-lg-4"></div>
         <div className="col-lg-4">
           <h4 className="mb-3 text-light">Contact Us</h4>
-          <p className='text-light'> <MdEmail />resumebuilder@gnail.com</p>
+          <p className='text-light'> <MdEmail />resumebuilder@gmail.com</p>
           <p className='text-light'> <FaPhoneAlt />9999999999</p>
           <h5 className="my-3 text-light">Connect With Us</h5>
           <div className="fs-5 text-light">
