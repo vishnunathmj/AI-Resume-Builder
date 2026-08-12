@@ -39,7 +39,7 @@ function View() {
             {/* Download */}
             <button style={{color:'#615048'}} className="btn fs-3 me-3"><IoMdDownload /></button>
             {/* Edit */}
-            <Edit/>
+            <Edit resumeDetails={resume} setResumeDetails={setResume}/>
             {/* all resume */}
             {/* <Link to={'/all-resumes'} style={{color:'#615048'}} className="btn fs-3 me-3"><HiMiniDocumentText /></Link> */}
             {/* Download history */}

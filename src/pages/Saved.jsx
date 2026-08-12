@@ -1,26 +1,57 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { FaTrashRestore } from 'react-icons/fa'
-import { getAllResumesAPI } from '../services/apiServices'
+import { FaSearch, FaTrashRestore } from 'react-icons/fa'
+import { deleteResumesAPI, getAllResumesAPI } from '../services/apiServices'
 
 function Saved() {
   const [allResumes, setAllResumes] = useState([])
+  const [searchKey, setSearchKey] = useState("")
+  const [dummyAllResumes,setDummyAllResumes] = useState([])
 
+  // console.log(searchKey);
+
+
+  
   useEffect(() => {
-    getAllResumes()
+   getAllResumes()
   }, [])
 
+
+  const searchOutput = useMemo(()=>{
+    setAllResumes(dummyAllResumes.filter(item=>item.job.toLowerCase().includes(searchKey.toLowerCase())))
+  },[searchKey])
+
+  // display resume
   const getAllResumes = async () => {
     const response = await getAllResumesAPI()
 
     if (response.status === 200) {
       setAllResumes(response.data)
+      setDummyAllResumes(response.data)
     }
   }
 
+  // remove resume
+  const removeResume = async (id) => {
+    if (confirm("Are you sure, You want to delete the resume")) {
+      const response = await deleteResumesAPI(id)
+      if (response.status == 200) {
+        getAllResumes()
+      }
+    }
+  }
+
+
+
+  // main part
   return (
-    <div className="my-5 d-flex justify-content-center align-items-center flex-column">
+    <div className="my-5 d-flex justify-content-center align-items-center flex-column px-5">
       <h1>All Saved Resumes</h1>
+      <p style={{textAlign:'justify'}} className='my-3'>All resumes submitted to the platform in one place, allowing administrators or recruiters to efficiently view, search, filter, and manage candidate profiles. It provides a quick overview of available candidates and their key details, making the recruitment and candidate-selection process more organized and efficient.</p>
+      <div className="d-flex justify-content-center align-items-center w-50">
+        <input onChange={(e)=>setSearchKey(e.target.value)} placeholder='Search Candidate by their job role' type="text" className='form-control'/>
+        <FaSearch style={{marginLeft:'-30px'}}/>
+      </div>
 
       <table className="my-5 table table-hover table-striped">
         <thead>
@@ -49,7 +80,7 @@ function Saved() {
                 </td>
 
                 <td>
-                  <button className="btn text-danger">
+                  <button onClick={() => removeResume(resume?.id)} className="btn text-danger">
                     <FaTrashRestore />
                   </button>
                 </td>
