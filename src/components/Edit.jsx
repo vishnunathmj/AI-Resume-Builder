@@ -11,6 +11,8 @@ import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import { FaXmark } from 'react-icons/fa6';
 import jobRole from '../assets/jobRole.json'
+import { toast } from 'react-toastify';
+import { editResumeAPI } from '../services/apiServices';
 
 
 const style = {
@@ -33,9 +35,41 @@ function Edit({ resumeDetails, setResumeDetails }) {
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
+  const skillRef = React.useRef()
 
-  const removeSkill = (skill)=>{
-    setResumeDetails ({...resumeDetails,skills:resumeDetails.skills.filter(item=>item!=skill)})
+  const removeSkill = (skill) => {
+    setResumeDetails({ ...resumeDetails, skills: resumeDetails.skills.filter(item => item != skill) })
+  }
+
+  const addSkill = (skill) => {
+    if (skill) {
+      if (resumeDetails?.skills?.map(item => item.toLowerCase()).includes(skill.toLowerCase())) {
+        toast.warning("Given skill isalready available... Please add another!!!")
+      } else {
+        setResumeDetails({ ...resumeDetails, skills: [...resumeDetails?.skills, skill] })
+      }
+      skillRef.current.value = ""
+    } else {
+      toast.info("Input valid skill")
+    }
+  }
+
+  const handleUpdateResume = async () => {
+    // make api call to save resume it should execute when update button is clicked
+    const { fullName, location, job, email, phone, github, linkedin, degree, college, year, skills, summary } = resumeDetails
+    if (fullName && location && job && email && phone && github && linkedin && degree && college && year && skills.length > 0 && summary) {
+      // api call
+      const response = await editResumeAPI(resumeDetails.id,resumeDetails)
+      // console.log(response);
+      if (response.status == 200) {
+        toast.success("Resume updated successfully!!!")
+        handleClose()
+        // const resumeId = response.data.id
+        }
+    } else {
+      toast.info("Please fill the form commpletely!!!")
+    }
+
   }
 
 
@@ -100,15 +134,15 @@ function Edit({ resumeDetails, setResumeDetails }) {
             <div className="">
               <h3>Skills</h3>
               <div className="d-flex p-3">
-                <input className="form-control" placeholder='Add New Skill' />
-                <Button className='btn'>ADD</Button>
+                <input ref={skillRef} className="form-control" placeholder='Add New Skill' />
+                <Button onClick={() => addSkill(skillRef.current.value)} className='btn'>ADD</Button>
               </div>
               <h6>Added Skills</h6>
               {/* all skills - duplicate */}
               <div className="p-3 d-flex justify-content-between flex-wrap">
                 {
-                  resumeDetails?.skills?.map(skill=>(
-                    <Button onClick={()=>removeSkill(skill)} key={skill} variant='contained' sx={{ backgroundColor: '#615048', color: 'white' }} className='my-1'>{skill} <FaXmark className='ms-2' /></Button>
+                  resumeDetails?.skills?.map(skill => (
+                    <Button onClick={() => removeSkill(skill)} key={skill} variant='contained' sx={{ backgroundColor: '#615048', color: 'white' }} className='my-1'>{skill} <FaXmark className='ms-2' /></Button>
                   ))
                 }
               </div>
@@ -117,11 +151,11 @@ function Edit({ resumeDetails, setResumeDetails }) {
             <div>
               <h3>Summary</h3>
               <div className="p-3 row">
-                <TextField value={resumeDetails.summary} onChange={e=>setResumeDetails({...resumeDetails,summary:e.target.value})} id='summary' label="Summary" multiline variant='standard' />
+                <TextField value={resumeDetails.summary} onChange={e => setResumeDetails({ ...resumeDetails, summary: e.target.value })} id='summary' label="Summary" multiline variant='standard' />
               </div>
             </div>
             {/* update Button */}
-            <button className='btn text-light mt-3' style={{ backgroundColor: '#62707d' }}>UPDATE CV</button>
+            <button onClick={handleUpdateResume} className='btn text-light mt-3' style={{ backgroundColor: '#62707d' }}>UPDATE CV</button>
           </Box>
         </Box>
       </Modal>

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import Preview from '../components/Preview'
 import { IoMdDownload } from "react-icons/io";
@@ -8,11 +8,13 @@ import { HiOutlineDocumentMagnifyingGlass } from "react-icons/hi2";
 import { FaBackward } from "react-icons/fa";
 import { IoIosCloudDownload } from "react-icons/io";
 import { viewResumeAPI } from '../services/apiServices';
-
-
+import { jsPDF } from "jspdf";
+import js from '@eslint/js';
+import html2canvas from 'html2canvas';
 
 function View() {
 
+  const previewRef = useRef()
   const [resume,setResume] = useState({})
 
   const {id} = useParams()
@@ -29,6 +31,20 @@ function View() {
     }
   }
 
+  const downloadCV = async ()=>{
+
+    const previewTag = previewRef.current
+    const canvas = await html2canvas(previewTag)
+    const pdf = new jsPDF
+    const imageWidth = pdf.internal.pageSize.getWidth()
+    const imageHeight = pdf.internal.pageSize.getHeight()
+    pdf.addImage(canvas,"PNG",0,0,imageWidth,imageHeight)
+    // generate image url from canvas
+    URL.createObjectURL(canvas)
+    // when download cv api call success
+    pdf.save("resume.pdf")
+  }
+
   return (
     <div className='container my-5' >
       <div className="row">
@@ -37,7 +53,7 @@ function View() {
           {/* navigation icons */}
           <div className="d-flex justify-content-center align-items-center">
             {/* Download */}
-            <button style={{color:'#615048'}} className="btn fs-3 me-3"><IoMdDownload /></button>
+            <button onClick={downloadCV} style={{color:'#615048'}} className="btn fs-3 me-3"><IoMdDownload /></button>
             {/* Edit */}
             <Edit resumeDetails={resume} setResumeDetails={setResume}/>
             {/* all resume */}
@@ -49,7 +65,7 @@ function View() {
 
           </div>
           {/* preview component */}
-          <div className="p-5">
+          <div ref={previewRef} className="p-5">
             <Preview resumeDetails={resume}/>
           </div>
         </div>
