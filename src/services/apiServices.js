@@ -33,5 +33,5 @@ export const downloadResumeAPI = async (resumeDetails) => {
 
 // get all download list api: called by download 
 export const getAlldownloadAPI = async () => {
-    return await axiosService("GET", "/downloads", {})
+    return await axiosService("GET", "/download", {})
 }

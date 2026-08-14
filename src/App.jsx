@@ -26,7 +26,7 @@ function App() {
         <Route path='/*' element={<Pnf/>} />
       </Routes>
       <Footer/>
-      <ToastContainer position='top-right' theme='colores' autoClose={3000}  />
+      <ToastContainer position='top-center' theme='dark' autoClose={3000}  />
     </>
   )
 }
